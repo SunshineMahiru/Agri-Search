@@ -1,37 +1,53 @@
-# Agri-Search
+# 🌿 农益搜 Agri-Search
+## 智慧农业决策支持平台
 
-#### 介绍
-农益搜——基于 Java Servlet +html+css+js + MySQL 的农作物病虫害知识库与防治查询系统
+> 守护每一寸绿色田野
 
-#### 软件架构
-软件架构说明
+**农益搜（Agri-Search）** 是一款基于 **Java Servlet + MySQL** 架构的智慧农业病虫害知识库系统，面向现代农业生产场景，为农作物病虫害防治提供便捷、可靠的决策支持。
 
+---
 
-#### 安装教程
+## 🌟 核心功能
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 1️⃣ 响应式 UI / UX
+- HTML5 + CSS3 构建响应式页面
+- 平滑入场动画与玻璃拟态视觉风格
+- 基于 **Fetch API** 的前后端异步交互，实现无刷新数据更新
 
-#### 使用说明
+### 2️⃣ 模块化安全防护
+- **传输层安全**：用户凭据 Base64 编码，避免明文传输
+- **存储层安全**：SHA-256 哈希算法，确保存储信息不可逆
+- **安全审计**：系统操作日志实时写入 `WEB-INF/security_logs.txt`
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 3️⃣ 管理员授权中心
+- 超级管理员 `admin` 统一管理系统账号
+- 新增用户权限即时生效
+- 授权行为同步记录至安全日志
 
-#### 参与贡献
+---
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+## 🛠️ 技术栈
 
+| 维度 | 技术 | 说明 |
+|----|----|----|
+| 后端 | Java Servlet (Jakarta EE 10) | 核心业务控制 |
+| 数据处理 | Gson / File I/O | JSON 序列化与日志存储 |
+| 前端 | HTML5 / CSS3 / JavaScript | 响应式布局与异步交互 |
+| 数据库 | MySQL 8.0 | 病虫害知识库 |
+| 运行环境 | Tomcat 10.1+ | Java Web 容器 |
+| 开发工具 | IntelliJ IDEA | 项目开发与调试 |
 
-#### 特技
+---
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+## 📸 系统预览
+
+- 病虫害专家知识库动态图谱展示
+- Base64 传输与 SHA-256 哈希处理流程
+
+---
+
+## 🚀 快速启动
+
+### 1. 数据库初始化
+```sql
+执行项目根目录下的 agri_db.sql
