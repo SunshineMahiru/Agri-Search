@@ -24,7 +24,7 @@
             overflow-x: hidden;
         }
 
-        /* --- 2. 流光入场快门 --- */
+        /* --- 2. 流光入场快门动画 --- */
         #shutter {
             position: fixed; top: 0; left: 0; width: 120vw; height: 100vh;
             background: linear-gradient(-45deg, #2d5a27, #2ecc71, #ffb92d, #00d2ff);
@@ -60,7 +60,7 @@
         .logo i { font-size: 1.8rem; color: var(--accent-lime); }
         .logo b { font-size: 1.4rem; letter-spacing: 1px; }
 
-        .nav-right { display: flex; align-items: center; gap: 20px; } /* 间距微调 */
+        .nav-right { display: flex; align-items: center; gap: 20px; }
 
         .ai-pill {
             background: linear-gradient(135deg, var(--warm-gold), #ff9100);
@@ -71,7 +71,6 @@
         }
         .ai-pill:hover { transform: translateY(-3px); filter: brightness(1.1); }
 
-        /* 新增：管理员管理按钮样式 */
         .admin-link {
             color: white; text-decoration: none; font-size: 0.9rem; font-weight: 600;
             display: flex; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s;
@@ -101,7 +100,7 @@
         }
         .hero-content h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; }
 
-        /* --- 5. 搜索与网格 --- */
+        /* --- 5. 搜索与列表 --- */
         .search-container { position: relative; z-index: 20; max-width: 800px; margin: -45px auto 0; padding: 0 20px; }
         .glass-search {
             background: white; padding: 8px; border-radius: 60px; display: flex; align-items: center;
@@ -125,13 +124,45 @@
         .c-body h3 { margin-bottom: 10px; color: var(--primary); }
         .c-body p { font-size: 0.9rem; color: #666; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* --- 6. 详情抽屉 --- */
+        /* --- 6. 核心：图谱入口卡片样式 --- */
+        .graph-entry-card {
+            background: linear-gradient(135deg, #1a5d1a 0%, #3a7d44 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 30px;
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            grid-column: 1 / -1;
+            box-shadow: 0 15px 35px rgba(45, 90, 39, 0.25);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .graph-entry-card:hover { transform: translateY(-5px); box-shadow: 0 25px 50px rgba(45, 90, 39, 0.4); }
+        .graph-entry-card .text-content { position: relative; z-index: 2; }
+        .graph-entry-card .graph-bg-icon {
+            position: absolute; right: -30px; top: -30px; font-size: 14rem;
+            opacity: 0.1; transform: rotate(-15deg); transition: 0.5s;
+        }
+        .graph-entry-card:hover .graph-bg-icon { transform: rotate(0deg) scale(1.1); opacity: 0.15; }
+        .graph-btn {
+            background: white; color: var(--primary); padding: 12px 30px;
+            border-radius: 50px; font-weight: 800; display: inline-flex;
+            align-items: center; gap: 10px; margin-top: 15px; transition: 0.3s;
+        }
+        .graph-btn:hover { background: var(--accent-lime); transform: translateX(5px); }
+
+        /* --- 7. 详情抽屉 --- */
         .drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 2000; display: none; }
         .drawer { position: fixed; right: 0; top: 0; width: 550px; height: 100%; background: white; transform: translateX(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2001; padding: 50px; overflow-y: auto; }
         .drawer.active { transform: translateX(0); }
         .close-drawer { font-size: 1.5rem; cursor: pointer; color: var(--primary); margin-bottom: 30px; display: block; }
 
-        /* 新增：管理弹窗专用样式 */
+        /* --- 8. 管理弹窗 --- */
         .admin-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; }
         .admin-modal { background: white; width: 400px; padding: 40px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); position: relative; }
         .admin-modal h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
@@ -148,6 +179,9 @@
 <nav id="navbar">
     <div class="logo"><i class="fas fa-leaf"></i> <b>AGRI-SEARCH</b></div>
     <div class="nav-right">
+        <a href="analysis.html" class="admin-link">
+            <i class="fas fa-chart-bar"></i> 数据分析
+        </a>
         <a class="admin-link" onclick="toggleAdminModal(true)">
             <i class="fas fa-user-plus"></i> 账号授权
         </a>
@@ -177,12 +211,26 @@
 </div>
 
 <main class="data-section">
-    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
-        <h2 style="color: var(--primary);">实时病害图谱</h2>
-        <span id="countBadge" style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">正在加载数据库...</span>
+    <div class="graph-entry-card" onclick="goToGraph()">
+        <div class="text-content">
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">
+                <i class="fas fa-project-diagram"></i> 农业知识关系图谱
+            </h2>
+            <p style="font-size: 1.1rem; opacity: 0.9;">探索作物、病害、药剂与环境之间的深度关联网络</p>
+            <div class="graph-btn">
+                立即进入图谱模式 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+        <i class="fas fa-network-wired graph-bg-icon"></i>
     </div>
+
+    <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="color: var(--primary);">实时病害知识列表</h2>
+        <span id="countBadge" style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">正在加载...</span>
+    </div>
+
     <div class="card-grid" id="cardGrid">
-        <p style="text-align:center; grid-column:1/-1;">正在获取农作物专家知识库数据...</p>
+        <p style="text-align:center; grid-column:1/-1;">正在同步农作物专家知识库...</p>
     </div>
 </main>
 
@@ -205,39 +253,77 @@
 <script>
     let agriData = [];
 
-    // 页面初始化
+    // 初始化
     window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { document.getElementById('shutter').style.transform = 'translateX(-120%)'; }, 300);
         fetchData();
     });
 
-    // 后端 Fetch API 数据请求
+    // --- 核心修复：添加缺失的 handleAddNewAccount 函数 ---
+    async function handleAddNewAccount() {
+        console.log("正在尝试调用 handleAddNewAccount..."); // 调试用
+        const user = document.getElementById('newUsername').value;
+        const pass = document.getElementById('newPassword').value;
+
+        if(!user || !pass) {
+            alert("请填写完整信息");
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'addAccount');
+            params.append('operator', 'admin');
+            params.append('username', user);
+            params.append('password', btoa(pass)); // 模拟哈希传输
+
+            // 发送到 LoginServlet
+            const res = await fetch('./login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+
+            const data = await res.json();
+            alert(data.message);
+            if(data.success) {
+                toggleAdminModal(false);
+            }
+        } catch (e) {
+            console.error("授权异常:", e);
+            alert("请求失败，请检查后端 Servlet 是否运行");
+        }
+    }
+
+    // --- 其他原有功能函数 ---
+    function toggleAdminModal(show) {
+        document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
+    }
+
     async function fetchData() {
         try {
             const response = await fetch('./searchPests');
-            if (!response.ok) throw new Error('API 连接异常');
+            if (!response.ok) throw new Error('API 响应错误');
             agriData = await response.json();
             render(agriData);
         } catch (error) {
-            console.error("数据加载失败:", error);
-            document.getElementById('cardGrid').innerHTML = `<div style="text-align:center; grid-column:1/-1; color: #e74c3c; padding: 50px;"><p>数据库同步失败，请检查后端 Servlet 部署。</p></div>`;
+            console.error("Fetch Error:", error);
+            document.getElementById('cardGrid').innerHTML = `<div style="text-align:center; grid-column:1/-1; padding: 50px; color: #e74c3c;">数据同步失败</div>`;
         }
     }
 
     function render(items) {
         const grid = document.getElementById('cardGrid');
-        document.getElementById('countBadge').innerText = `${items.length} 种病害信息已同步`;
-
+        document.getElementById('countBadge').innerText = `${items.length} 条数据已同步`;
         if (items.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; padding: 50px;">未找到匹配的农业病害信息。</p>';
+            grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; padding: 50px;">无匹配结果</p>';
             return;
         }
-
-        grid.innerHTML = items.map((item, i) => `
+        grid.innerHTML = items.map(item => `
             <div class="liquid-card" onclick="showDetail(${item.id})">
                 <div class="c-img-wrap">
                     <div class="c-img" style="background-image:url('${item.imageUrl || 'https://via.placeholder.com/400x300'}')"></div>
-                    <div class="c-tag">数据库索引 #${item.id}</div>
+                    <div class="c-tag">索引 #${item.id}</div>
                 </div>
                 <div class="c-body">
                     <h3>${item.name}</h3>
@@ -247,54 +333,12 @@
         `).join('');
     }
 
-    // --- 管理功能 JS 逻辑 ---
-    function toggleAdminModal(show) {
-        document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
-    }
-
-    async function handleAddNewAccount() {
-        const user = document.getElementById('newUsername').value;
-        const pass = document.getElementById('newPassword').value;
-
-        if(!user || !pass) { alert("请填写完整信息"); return; }
-
-        try {
-            const params = new URLSearchParams();
-            params.append('action', 'addAccount');
-            params.append('operator', 'admin'); // 假设当前已是 admin 身份
-            params.append('username', user);
-            params.append('password', btoa(pass)); // Base64 传输
-
-            const res = await fetch('./login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-            const data = await res.json();
-            alert(data.message);
-            if(data.success) toggleAdminModal(false);
-        } catch (e) {
-            alert("授权请求失败，请检查网络");
-        }
-    }
-
-    // 正则表达式校验
     function handleSearch() {
-        const input = document.getElementById('searchInput');
-        const kw = input.value.trim().toLowerCase();
-        const bar = document.getElementById('searchBar');
-        const regex = /^[a-zA-Z0-9\u4e00-\u9fa5\s]*$/;
-
-        if (!regex.test(kw)) {
-            bar.style.borderColor = "#ff4d4f";
-            bar.style.boxShadow = "0 0 15px rgba(255,77,79,0.3)";
-            return;
-        } else {
-            bar.style.borderColor = "white";
-            bar.style.boxShadow = "0 20px 40px rgba(0,0,0,0.08)";
-        }
-
-        const filtered = agriData.filter(d => d.name.toLowerCase().includes(kw) || d.symptoms.toLowerCase().includes(kw));
+        const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+        const filtered = agriData.filter(d =>
+            d.name.toLowerCase().includes(kw) ||
+            d.symptoms.toLowerCase().includes(kw)
+        );
         render(filtered);
     }
 
@@ -305,11 +349,11 @@
             <h1 style="color:var(--primary); font-size:2.2rem; margin-bottom:15px;">${item.name}</h1>
             <div style="height:250px; border-radius:20px; background:url('${item.imageUrl}') center/cover; margin-bottom:25px;"></div>
             <div style="margin-bottom:25px;">
-                <h4 style="color:#888; font-size:0.8rem; margin-bottom:8px;">病害症状描述</h4>
+                <h4 style="color:#888; font-size:0.8rem; margin-bottom:8px;">病害症状</h4>
                 <p style="line-height:1.7; color:#444;">${item.symptoms}</p>
             </div>
             <div style="background:#f0f7f0; padding:25px; border-radius:20px; border-left:5px solid var(--primary);">
-                <h4 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-shield-virus"></i> 科学防治建议</h4>
+                <h4 style="margin-bottom:10px; color:var(--primary);"><i class="fas fa-shield-virus"></i> 防治建议</h4>
                 <p style="font-size:1rem; line-height:1.7; color:#2d5a27;">${item.prevention}</p>
             </div>
         `;
@@ -322,14 +366,12 @@
         setTimeout(() => document.getElementById('mask').style.display = 'none', 500);
     }
 
-    window.onscroll = () => { document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50); };
+    function goToAI() { window.location.href = 'ai_diagnose.html'; }
+    function goToGraph() { window.location.href = 'graph_view.html'; }
 
-    function goToAI() {
-        const shutter = document.getElementById('shutter');
-        shutter.style.transition = 'none'; shutter.style.transform = 'translateX(120%)'; shutter.offsetHeight;
-        shutter.style.transition = 'transform 0.9s cubic-bezier(0.7, 0, 0.2, 1)'; shutter.style.transform = 'translateX(0)';
-        setTimeout(() => { window.location.href = 'ai_diagnose.html'; }, 800);
-    }
+    window.onscroll = () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    };
 </script>
 </body>
 </html>
