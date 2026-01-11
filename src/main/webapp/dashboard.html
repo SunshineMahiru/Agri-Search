@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农益搜 Agri-Search | 大数据决策指挥舱</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/echarts-map/js/china.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- 全局暗黑科技风样式 --- */
+        body {
+            margin: 0; padding: 0;
+            background-color: #0b0f19; /* 深蓝黑背景 */
+            color: #fff;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航条 */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 40px;
+            background: rgba(20, 30, 48, 0.8);
+            border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        .brand { font-size: 1.5rem; font-weight: bold; color: #2ecc71; letter-spacing: 2px; }
+        .back-btn {
+            text-decoration: none; color: rgba(255,255,255,0.7);
+            border: 1px solid rgba(255,255,255,0.2); padding: 8px 20px;
+            border-radius: 20px; transition: 0.3s; font-size: 0.9rem;
+        }
+        .back-btn:hover { background: #2ecc71; color: #000; border-color: #2ecc71; }
+
+        /* 核心布局：Grid */
+        .dashboard-container {
+            max-width: 1600px; margin: 30px auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr; /* 左大右小 */
+            grid-template-rows: 500px 350px;  /* 上高下矮 */
+            gap: 25px; padding: 0 30px;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: rgba(25, 35, 50, 0.6);
+            border: 1px solid rgba(46, 204, 113, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        /* 装饰角标 */
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 20px; height: 20px;
+            border-top: 2px solid #2ecc71; border-left: 2px solid #2ecc71; border-radius: 10px 0 0 0;
+        }
+        .card::after {
+            content: ''; position: absolute; bottom: 0; right: 0; width: 20px; height: 20px;
+            border-bottom: 2px solid #2ecc71; border-right: 2px solid #2ecc71; border-radius: 0 0 10px 0;
+        }
+
+        .card-title {
+            font-size: 1.1rem; color: #2ecc71; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* 布局特化 */
+        .map-box { grid-column: 1 / 2; grid-row: 1 / 2; } /* 左上：地图 */
+        .rank-box { grid-column: 2 / 3; grid-row: 1 / 2; } /* 右上：热搜 */
+        .trend-box { grid-column: 1 / -1; grid-row: 2 / 3; } /* 下方通栏：趋势 */
+
+        /* 加载动画 */
+        .loading { text-align: center; color: #666; padding-top: 20%; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand"><i class="fas fa-chart-network"></i> AGRI-BRAIN 农业决策大脑</div>
+    <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> 返回系统首页</a>
+</header>
+
+<div class="dashboard-container">
+
+    <div class="card map-box">
+        <div class="card-title"><i class="fas fa-globe-asia"></i> 全国病虫害风险态势 (GIS)</div>
+        <div id="mapChart" style="width: 100%; height: 90%;">
+            <div class="loading">正在加载 GIS 空间数据...</div>
+        </div>
+    </div>
+
+    <div class="card rank-box">
+        <div class="card-title"><i class="fas fa-fire"></i> 实时农情关注热度 Top 10</div>
+        <div id="rankChart" style="width: 100%; height: 90%;">
+            <div class="loading">正在同步搜索埋点数据...</div>
+        </div>
+    </div>
+
+    <div class="card trend-box">
+        <div class="card-title"><i class="fas fa-calendar-alt"></i> 全年农事病害爆发预警 (Time Series)</div>
+        <div id="trendChart" style="width: 100%; height: 85%;">
+            <div class="loading">正在计算时间序列模型...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 初始化图表实例
+    const mapChart = echarts.init(document.getElementById('mapChart'));
+    const rankChart = echarts.init(document.getElementById('rankChart'));
+    const trendChart = echarts.init(document.getElementById('trendChart'));
+
+    // 统一配色方案
+    const themeColor = '#2ecc71';
+
+    // --- 1. 加载地图数据 ---
+    async function loadMapData() {
+        try {
+            const res = await fetch('./dashboard/data?action=map');
+            const data = await res.json();
+
+            mapChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}<br/>风险指数: {c}',
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    textStyle: { color: '#fff' },
+                    borderColor: '#2ecc71'
+                },
+                visualMap: {
+                    min: 0, max: 150,
+                    text: ['高风险', '低风险'],
+                    realtime: false,
+                    calculable: true,
+                    inRange: {
+                        color: ['#1c2636', '#2d5a27', '#f1c40f', '#e74c3c'] // 这里的颜色从暗蓝到绿到红
+                    },
+                    textStyle: { color: '#fff' },
+                    left: '20', bottom: '20'
+                },
+                series: [{
+                    name: '病害分布',
+                    type: 'map',
+                    map: 'china', // 依赖 china.js
+                    roam: true,   // 允许缩放和平移
+                    itemStyle: {
+                        areaColor: '#1c2636',
+                        borderColor: '#404a59'
+                    },
+                    emphasis: {
+                        itemStyle: { areaColor: '#2a333d' },
+                        label: { show: true, color: '#fff' }
+                    },
+                    data: data
+                }]
+            });
+        } catch (e) {
+            console.error("地图加载失败:", e);
+            document.getElementById('mapChart').innerHTML = "<p style='text-align:center; color:red'>地图数据加载异常，请检查网络或后端接口</p>";
+        }
+    }
+
+    // --- 2. 加载热搜排行 ---
+    async function loadRankData() {
+        const res = await fetch('./dashboard/data?action=logs');
+        const data = await res.json(); // [{name: '稻瘟病', value: 10}, ...]
+
+        rankChart.setOption({
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '10%', bottom: '3%', containLabel: true },
+            xAxis: { type: 'value', splitLine: { show: false }, axisLabel: { color: '#888' } },
+            yAxis: {
+                type: 'category',
+                data: data.map(i => i.name).reverse(),
+                axisLabel: { color: '#fff' },
+                axisLine: { show: false },
+                axisTick: { show: false }
+            },
+            series: [{
+                type: 'bar',
+                data: data.map(i => i.value).reverse(),
+                label: { show: true, position: 'right', color: themeColor },
+                itemStyle: {
+                    borderRadius: [0, 20, 20, 0],
+                    color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                        { offset: 0, color: '#11998e' },
+                        { offset: 1, color: '#38ef7d' }
+                    ])
+                },
+                barWidth: 15
+            }]
+        });
+    }
+
+    // --- 3. 加载时间预警 ---
+    async function loadTrendData() {
+        const res = await fetch('./dashboard/data?action=calendar');
+        const data = await res.json();
+
+        trendChart.setOption({
+            tooltip: { trigger: 'axis' },
+            grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: data.months.map(m => m + '月'),
+                axisLabel: { color: '#888' }
+            },
+            yAxis: {
+                type: 'value',
+                splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+                axisLabel: { color: '#888' }
+            },
+            series: [{
+                name: '爆发风险指数',
+                type: 'line',
+                smooth: true,
+                data: data.values,
+                areaStyle: {
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: 'rgba(46, 204, 113, 0.5)' },
+                        { offset: 1, color: 'rgba(46, 204, 113, 0.01)' }
+                    ])
+                },
+                itemStyle: { color: themeColor },
+                lineStyle: { width: 3 }
+            }]
+        });
+    }
+
+    // 启动加载
+    loadMapData();
+    loadRankData();
+    loadTrendData();
+
+    // 窗口自适应
+    window.addEventListener('resize', () => {
+        mapChart.resize();
+        rankChart.resize();
+        trendChart.resize();
+    });
+</script>
+</body>
+</html>

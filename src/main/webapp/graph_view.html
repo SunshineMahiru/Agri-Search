@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>农益搜 | 灵动知识图谱</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #2d5a27; --bg: #f5f7f2; }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); font-family: 'PingFang SC'; overflow: hidden; }
+
+        /* 顶部导航 */
+        #nav {
+            position: absolute; top: 0; width: 100%; padding: 20px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);
+        }
+
+        /* 图表容器 */
+        #container { width: 100vw; height: 100vh; cursor: grab; }
+        #container:active { cursor: grabbing; }
+
+        /* 侧边信息浮窗 */
+        .info {
+            position: absolute; right: 20px; top: 100px; width: 320px;
+            background: white; border-radius: 20px; padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 100;
+            animation: slideIn 0.4s ease;
+        }
+        @keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+
+        .close-btn { width:100%; margin-top:15px; padding:10px; border:none; background:#f0f7f0; color:var(--primary); border-radius:8px; cursor:pointer; font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<div id="nav">
+    <a href="index.html" style="text-decoration:none; color:var(--primary); font-weight:bold;">
+        <i class="fas fa-chevron-left"></i> 返回首页
+    </a>
+    <h3 style="color:var(--primary)"><i class="fas fa-project-diagram"></i> 农业病害交互式关系网络</h3>
+    <div style="color:#888; font-size:0.8rem;">
+        <span style="color:#2ecc71">●</span> 鼠标左键拖动节点 | <span style="color:#2ecc71">●</span> 滚轮缩放图表
+    </div>
+</div>
+
+<div id="container"></div>
+
+<div class="info" id="info">
+    <h3 id="nTitle" style="color:var(--primary); margin-bottom:10px;"></h3>
+    <div id="nContent" style="font-size:0.9rem; color:#555; line-height:1.6"></div>
+    <button class="close-btn" onclick="document.getElementById('info').style.display='none'">确定</button>
+</div>
+
+<script>
+    const chart = echarts.init(document.getElementById('container'));
+
+    async function initGraph() {
+        try {
+            const res = await fetch('./searchPests');
+            const data = await res.json();
+
+            // 节点颜色定义
+            const colors = { root: '#1a4314', pest: '#2ecc71', solution: '#ffb92d' };
+
+            const nodes = [{
+                id: '0',
+                name: '农业专家库',
+                symbolSize: 65,
+                itemStyle: { color: colors.root },
+                category: 0,
+                draggable: true // 开启拖拽
+            }];
+            const links = [];
+
+            data.forEach(item => {
+                const pestId = 'p' + item.id;
+                // 1. 病害节点
+                nodes.push({
+                    id: pestId,
+                    name: item.name,
+                    symbolSize: 45,
+                    value: item.symptoms,
+                    itemStyle: { color: colors.pest },
+                    draggable: true, // 开启单个节点拖拽
+                    category: 1
+                });
+                links.push({ source: '0', target: pestId });
+
+                // 2. 防治方案节点
+                if(item.prevention) {
+                    const solId = 's' + item.id;
+                    nodes.push({
+                        id: solId,
+                        name: item.name + '防治',
+                        symbolSize: 30,
+                        value: item.prevention,
+                        itemStyle: { color: colors.solution },
+                        draggable: true, // 开启单个节点拖拽
+                        category: 2
+                    });
+                    links.push({ source: pestId, target: solId });
+                }
+            });
+
+            const option = {
+                tooltip: { show: false }, // 关闭默认提示框，使用我们自定义的侧边栏
+                series: [{
+                    type: 'graph',
+                    layout: 'force',
+                    data: nodes,
+                    links: links,
+                    roam: true, // 开启全图缩放和平移
+                    draggable: true, // 全局开启节点拖拽
+                    focusNodeAdjacency: true, // 鼠标悬停高亮邻近节点
+                    label: {
+                        show: true,
+                        position: 'bottom',
+                        color: '#444',
+                        fontSize: 12
+                    },
+                    force: {
+                        repulsion: 1500,    // 节点之间的斥力
+                        edgeLength: 120,    // 连线长度
+                        gravity: 0.1,       // 节点受中心向心力的程度
+                        friction: 0.6       // 摩擦力，值越大拖动越平滑（不乱飞）
+                    },
+                    lineStyle: {
+                        color: '#ccc',
+                        width: 2,
+                        curveness: 0.1
+                    },
+                    emphasis: {
+                        lineStyle: { width: 4, color: '#2d5a27' }
+                    }
+                }]
+            };
+
+            chart.setOption(option);
+
+            // 点击交互
+            chart.on('click', (params) => {
+                if(params.dataType === 'node') {
+                    const panel = document.getElementById('info');
+                    document.getElementById('nTitle').innerText = params.data.name;
+                    document.getElementById('nContent').innerText = params.data.value || "中心索引：请点击周边子节点查看详细病害及防治信息。";
+                    panel.style.display = 'block';
+                }
+            });
+
+            // 拖拽逻辑增强：防止拖动时页面跟着滚动
+            chart.on('mousedown', () => {
+                document.getElementById('container').style.cursor = 'grabbing';
+            });
+            chart.on('mouseup', () => {
+                document.getElementById('container').style.cursor = 'grab';
+            });
+
+        } catch (e) {
+            console.error("加载图谱失败：", e);
+        }
+    }
+
+    initGraph();
+    window.onresize = () => chart.resize();
+</script>
+</body>
+</html>

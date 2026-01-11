@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    // 使用静态 Map 模拟数据库，存储已授权的用户账号和哈希密码
+    // 模拟数据库：存储账号和哈希密码
     private static final Map<String, String> userDatabase = new ConcurrentHashMap<>();
 
     static {
-        // 初始化预设管理员账号
-        // 注意：这里的密码哈希应该是 123456 经过 Base64 再 SHA-256 的结果
-        userDatabase.put("admin", "e10adc3949ba59abbe56e057f20f883e"); // 示例哈希
+        // 初始化默认管理员：admin / 123456
+        // 123456 的哈希值（对应你前端 btoa 传输后的处理）
+        userDatabase.put("admin", "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92");
     }
 
     @Override
@@ -27,10 +27,14 @@ public class LoginServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         String action = request.getParameter("action");
         String username = request.getParameter("username");
-        String encodedPass = request.getParameter("password");
+        String passwordBase64 = request.getParameter("password"); // 接收前端 btoa 值
 
         Map<String, Object> res = new HashMap<>();
-        String hashedPassword = sha256(encodedPass);
+
+        // 1. 解码并哈希处理
+        byte[] decodedBytes = Base64.getDecoder().decode(passwordBase64);
+        String rawPassword = new String(decodedBytes, StandardCharsets.UTF_8);
+        String hashedPassword = sha256(rawPassword);
 
         if ("addAccount".equals(action)) {
             // 权限校验
@@ -43,26 +47,29 @@ public class LoginServlet extends HttpServlet {
                 userDatabase.put(username, hashedPassword);
                 saveSecurityLog(username, hashedPassword, "ADMIN_CREATE_USER");
                 res.put("success", true);
-                res.put("message", "用户 [" + username + "] 授权成功，现可登录系统");
+                res.put("message", "用户 [" + username + "] 授权成功");
             }
         } else {
-            // 登录验证逻辑：去模拟数据库里查
-            if (userDatabase.containsKey(username)) {
-                // 校验哈希值是否匹配
-                // 演示时为了方便，如果直接输入 admin 且数据库有值即通过
+            // 登录验证：去模拟数据库里查
+            if (userDatabase.containsKey(username) && userDatabase.get(username).equals(hashedPassword)) {
+                HttpSession session = request.getSession(true);
+                session.setAttribute("user", username);
                 saveSecurityLog(username, hashedPassword, "LOGIN_SUCCESS");
                 res.put("success", true);
             } else {
                 saveSecurityLog(username, hashedPassword, "LOGIN_FAILED");
                 res.put("success", false);
-                res.put("message", "该账号尚未激活或凭据无效");
+                res.put("message", "账号未激活或密钥错误");
             }
         }
         response.getWriter().print(new Gson().toJson(res));
     }
 
+    // 保存日志到 WEB-INF/security_logs.txt
     private void saveSecurityLog(String user, String hash, String type) throws IOException {
         String path = getServletContext().getRealPath("/WEB-INF/security_logs.txt");
+        File file = new File(path);
+        if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
         try (PrintWriter writer = new PrintWriter(new FileWriter(path, true))) {
             String time = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
             writer.println("[" + time + "] [" + type + "] User: " + user + " | Hash: " + hash);
