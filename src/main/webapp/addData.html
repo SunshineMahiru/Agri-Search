@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>添加病害数据 | 农益搜 Agri-Search</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* 复用主页核心样式变量 */
+    :root {
+      --primary: #2d5a27;
+      --s-green: #2ecc71;
+      --warm-gold: #ffb92d;
+      --accent-lime: #cddc39;
+      --bg-warm: #fdfaf5;
+      --shadow: 0 20px 40px rgba(45, 90, 39, 0.1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background-color: var(--bg-warm);
+      color: #2c3e50;
+      padding-top: 100px;
+    }
+    /* 导航栏复用主页样式 */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 15px 50px; transition: 0.4s;
+      background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .logo { display: flex; align-items: center; gap: 10px; color: var(--primary); }
+    .logo i { font-size: 1.8rem; color: var(--accent-lime); }
+    .logo b { font-size: 1.4rem; letter-spacing: 1px; }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .admin-link {
+      color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+      display: flex; align-items: center; gap: 5px; cursor: pointer; transition: 0.3s;
+    }
+    .admin-link:hover { color: var(--warm-gold); }
+    .ai-pill {
+      background: linear-gradient(135deg, var(--warm-gold), #ff9100);
+      color: #3e2723; padding: 10px 24px; border-radius: 50px;
+      font-weight: 800; text-decoration: none; font-size: 0.9rem;
+      box-shadow: 0 8px 20px rgba(255, 185, 45, 0.4);
+      display: flex; align-items: center; gap: 8px; transition: 0.3s;
+    }
+    .ai-pill:hover { transform: translateY(-3px); filter: brightness(1.1); }
+    .logout-link {
+      color: var(--primary); text-decoration: none; font-size: 0.95rem; font-weight: 600;
+      display: flex; align-items: center; gap: 6px; transition: 0.3s;
+    }
+    .logout-link:hover { color: var(--warm-gold); transform: scale(1.05); }
+
+    /* 表单容器样式 */
+    .form-container {
+      max-width: 800px; margin: 0 auto; padding: 0 20px;
+    }
+    .form-card {
+      background: white; border-radius: 24px; padding: 40px;
+      box-shadow: var(--shadow); margin-bottom: 40px;
+    }
+    .form-title {
+      color: var(--primary); font-size: 1.8rem; margin-bottom: 30px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .form-group {
+      margin-bottom: 25px;
+    }
+    .form-label {
+      display: block; margin-bottom: 8px; font-weight: 600; color: #2c3e50;
+    }
+    .form-control {
+      width: 100%; padding: 15px; border: 1.5px solid #eee;
+      border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s;
+    }
+    .form-control:focus {
+      border-color: var(--primary); box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.1);
+    }
+    select.form-control {
+      appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232d5a27' viewBox='0 0 16 16'%3E%3Cpath d='M8 11l4-4H4l4 4z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 15px center;
+    }
+    textarea.form-control {
+      min-height: 120px; resize: vertical;
+    }
+    .file-upload {
+      border: 1.5px dashed #eee; padding: 30px; border-radius: 12px;
+      text-align: center; transition: 0.3s; cursor: pointer;
+    }
+    .file-upload:hover {
+      border-color: var(--s-green); background-color: rgba(46, 204, 113, 0.05);
+    }
+    .file-icon {
+      font-size: 2.5rem; color: #999; margin-bottom: 10px;
+    }
+    .file-text {
+      color: #666; margin-bottom: 5px;
+    }
+    .file-hint {
+      font-size: 0.8rem; color: #999;
+    }
+    #filePreview {
+      margin-top: 15px; max-height: 200px; border-radius: 8px; display: none;
+    }
+    .submit-btn {
+      width: 100%; padding: 18px; background: var(--primary); color: white;
+      border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 800;
+      cursor: pointer; transition: 0.3s; box-shadow: 0 8px 20px rgba(45, 90, 39, 0.2);
+    }
+    .submit-btn:hover {
+      background: #23471f; transform: translateY(-3px); box-shadow: 0 12px 25px rgba(45, 90, 39, 0.3);
+    }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 5px; color: var(--primary);
+      text-decoration: none; font-weight: 600; margin-top: 20px;
+    }
+    .back-link:hover {
+      color: var(--warm-gold);
+    }
+  </style>
+</head>
+<body>
+<!-- 导航栏复用主页结构 -->
+<nav>
+  <div class="logo"><<i class="fas fa-leaf"></i> <b>AGRI-SEARCH</b></div>
+  <div class="nav-right">
+    <a href="addData.html" class="admin-link">
+      <<i class="fas fa-plus-circle"></i> 添加数据
+    </a>
+    <a href="analysis.html" class="admin-link">
+      <<i class="fas fa-chart-bar"></i> 数据分析
+    </a>
+    <a class="admin-link" onclick="toggleAdminModal(true)">
+      <<i class="fas fa-user-plus"></i> 账号授权
+    </a>
+    <a href="javascript:void(0)" onclick="goToAI()" class="ai-pill">
+      <<i class="fas fa-wand-magic-sparkles"></i> AI 智能诊断
+    </a>
+    <a href="Login.html" class="logout-link">
+      <<i class="fas fa-sign-out-alt"></i> 退出登录
+    </a>
+  </div>
+</nav>
+
+<!-- 表单容器 -->
+<div class="form-container">
+  <div class="form-card">
+    <h2 class="form-title"><<i class="fas fa-database"></i> 添加病害数据</h2>
+    <form id="addDataForm" enctype="multipart/form-data">
+      <!-- 作物分类选择（对应crop_id） -->
+      <div class="form-group">
+        <label class="form-label" for="cropId">作物分类 <span style="color: #e74c3c;">*</span></label>
+        <select class="form-control" id="cropId" name="cropId" required>
+          <option value="">请选择作物类型</option>
+          <option value="1">水稻</option>
+          <option value="2">小麦</option>
+          <option value="3">玉米</option>
+          <option value="4">棉花</option>
+          <option value="5">其他</option>
+        </select>
+      </div>
+
+      <!-- 病害名称（对应name） -->
+      <div class="form-group">
+        <label class="form-label" for="diseaseName">病害/虫害名称 <span style="color: #e74c3c;">*</span></label>
+        <input type="text" class="form-control" id="diseaseName" name="diseaseName" placeholder="例如：水稻纹枯病、小麦蚜虫" required>
+      </div>
+
+      <!-- 病害症状（对应symptoms） -->
+      <div class="form-group">
+        <label class="form-label" for="symptoms">症状描述 <span style="color: #e74c3c;">*</span></label>
+        <textarea class="form-control" id="symptoms" name="symptoms" placeholder="详细描述病害/虫害的表现特征，例如：叶鞘出现云纹状病斑，边缘暗褐中间灰白" required></textarea>
+      </div>
+
+      <!-- 解决方法（对应prevention） -->
+      <div class="form-group">
+        <label class="form-label" for="prevention">防治建议 <span style="color: #e74c3c;">*</span></label>
+        <textarea class="form-control" id="prevention" name="prevention" placeholder="详细描述防治方法，例如：合理密植，控制氮肥；喷施井冈霉素" required></textarea>
+      </div>
+
+      <!-- 图片上传（对应image_url） -->
+      <div class="form-group">
+        <label class="form-label" for="imageUpload">病害图片 <span style="color: #e74c3c;">*</span></label>
+        <div class="file-upload" onclick="document.getElementById('imageUpload').click()">
+          <input type="file" id="imageUpload" name="imageFile" accept="image/jpeg,image/png" hidden required>
+          <div class="file-icon"><<i class="fas fa-cloud-upload-alt"></i></div>
+          <div class="file-text">点击上传图片（支持JPG、PNG格式）</div>
+          <div class="file-hint">图片尺寸建议400×300像素，大小不超过2MB</div>
+          <img id="filePreview" src="" alt="图片预览">
+        </div>
+      </div>
+
+      <!-- 提交按钮 -->
+      <button type="submit" class="submit-btn">保存数据并返回主页</button>
+    </form>
+    <a href="index.html" class="back-link"><<i class="fas fa-arrow-left"></i> 返回主页</a>
+  </div>
+</div>
+
+<!-- 管理员授权弹窗（复用主页逻辑） -->
+<div class="admin-modal-mask" id="adminModal" style="display: none;" onclick="if(event.target==this) toggleAdminModal(false)">
+  <div class="admin-modal">
+    <h2><<i class="fas fa-shield-alt"></i> 管理员授权</h2>
+    <input type="text" id="newUsername" placeholder="新管理员用户名">
+    <input type="password" id="newPassword" placeholder="初始验证密钥">
+    <button onclick="handleAddNewAccount()">授权并加密存储</button>
+    <p style="text-align:center; margin-top:15px; color:#999; font-size:0.8rem; cursor:pointer" onclick="toggleAdminModal(false)">取消操作</p>
+  </div>
+</div>
+
+<script>
+  // 图片预览功能
+  document.getElementById('imageUpload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const previewImg = document.getElementById('filePreview');
+        previewImg.src = event.target.result;
+        previewImg.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // 表单提交处理
+  document.getElementById('addDataForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    try {
+      const response = await fetch('./addPests', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('数据添加成功！即将返回主页');
+        window.location.href = 'index.html';
+      } else {
+        alert('数据添加失败：' + result.message);
+      }
+    } catch (error) {
+      console.error('提交错误：', error);
+      alert('网络异常，数据提交失败，请重试');
+    }
+  });
+
+  // 复用主页导航相关函数
+  function toggleAdminModal(show) {
+    document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
+  }
+  function handleAddNewAccount() {
+    const user = document.getElementById('newUsername').value;
+    const pass = document.getElementById('newPassword').value;
+    if(!user || !pass) {
+      alert("请填写完整信息");
+      return;
+    }
+    alert('管理员授权功能需配合后端LoginServlet使用，此处为前端演示');
+    toggleAdminModal(false);
+  }
+  function goToAI() {
+    window.location.href = 'ai_diagnose.html';
+  }
+</script>
+</body>
+</html>
