@@ -13,6 +13,7 @@
             --warm-gold: #ffb92d;
             --accent-lime: #cddc39;
             --bg-warm: #fdfaf5;
+            --danger: #ff4757;
             --shadow: 0 20px 40px rgba(45, 90, 39, 0.1);
         }
 
@@ -24,7 +25,7 @@
             overflow-x: hidden;
         }
 
-        /* --- 2. 流光入场快门动画 --- */
+        /* --- 2. 流光入场动画 --- */
         #shutter {
             position: fixed; top: 0; left: 0; width: 120vw; height: 100vh;
             background: linear-gradient(-45deg, #2d5a27, #2ecc71, #ffb92d, #00d2ff);
@@ -78,13 +79,6 @@
         nav.scrolled .admin-link { color: var(--primary); }
         .admin-link:hover { color: var(--warm-gold) !important; }
 
-        .logout-link {
-            color: white; text-decoration: none; font-size: 0.95rem; font-weight: 600;
-            display: flex; align-items: center; gap: 6px; transition: 0.3s;
-        }
-        nav.scrolled .logout-link { color: var(--primary); }
-        .logout-link:hover { color: var(--warm-gold) !important; transform: scale(1.05); }
-
         /* --- 4. Hero 区域 --- */
         .hero { position: relative; width: 100%; height: 55vh; background: #000; overflow: hidden; }
         .slide {
@@ -100,76 +94,55 @@
         }
         .hero-content h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; }
 
-        /* --- 5. 搜索与列表 --- */
-        .search-container { position: relative; z-index: 20; max-width: 800px; margin: -45px auto 0; padding: 0 20px; }
-        .glass-search {
-            background: white; padding: 8px; border-radius: 60px; display: flex; align-items: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); border: 2px solid white; transition: 0.3s;
-        }
-        .glass-search input { flex: 1; border: none; outline: none; padding: 10px 25px; font-size: 1.1rem; }
-        .search-btn { background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; }
-
-        .data-section { max-width: 1300px; margin: 60px auto; padding: 0 40px; }
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-
+        /* --- 5. 卡片样式与删除按钮 --- */
         .liquid-card {
-            background: white; border-radius: 24px; overflow: hidden;
+            background: white; border-radius: 24px; overflow: visible;
             box-shadow: var(--shadow); transition: 0.4s; cursor: pointer;
+            position: relative;
         }
         .liquid-card:hover { transform: translateY(-10px); }
-        .c-img-wrap { height: 200px; overflow: hidden; position: relative; }
+
+        .c-img-wrap { height: 200px; border-radius: 24px 24px 0 0; overflow: hidden; position: relative; }
         .c-img { width: 100%; height: 100%; background-size: cover; background-position: center; }
         .c-tag { position: absolute; top: 15px; left: 15px; background: var(--accent-lime); color: var(--primary); padding: 4px 12px; border-radius: 8px; font-weight: 800; font-size: 0.7rem; }
+
+        /* 删除小叉号按钮 */
+        .delete-badge {
+            position: absolute; top: -12px; right: -12px;
+            background: var(--danger); color: white; width: 32px; height: 32px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+            border: 2.5px solid white; z-index: 100; opacity: 0; transition: 0.3s;
+        }
+        .liquid-card:hover .delete-badge { opacity: 1; transform: scale(1.1); }
+        .delete-badge:hover { background: #ff6b81; transform: scale(1.2) !important; }
+
         .c-body { padding: 20px; }
         .c-body h3 { margin-bottom: 10px; color: var(--primary); }
         .c-body p { font-size: 0.9rem; color: #666; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* --- 6. 核心：图谱入口卡片样式 --- */
-        .graph-entry-card {
-            background: linear-gradient(135deg, #1a5d1a 0%, #3a7d44 100%);
-            color: white;
-            padding: 40px;
-            border-radius: 30px;
-            margin-bottom: 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.4s;
-            position: relative;
-            overflow: hidden;
-            grid-column: 1 / -1;
-            box-shadow: 0 15px 35px rgba(45, 90, 39, 0.25);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .graph-entry-card:hover { transform: translateY(-5px); box-shadow: 0 25px 50px rgba(45, 90, 39, 0.4); }
-        .graph-entry-card .text-content { position: relative; z-index: 2; }
-        .graph-entry-card .graph-bg-icon {
-            position: absolute; right: -30px; top: -30px; font-size: 14rem;
-            opacity: 0.1; transform: rotate(-15deg); transition: 0.5s;
-        }
-        .graph-entry-card:hover .graph-bg-icon { transform: rotate(0deg) scale(1.1); opacity: 0.15; }
-        .graph-btn {
-            background: white; color: var(--primary); padding: 12px 30px;
-            border-radius: 50px; font-weight: 800; display: inline-flex;
-            align-items: center; gap: 10px; margin-top: 15px; transition: 0.3s;
-        }
-        .graph-btn:hover { background: var(--accent-lime); transform: translateX(5px); }
+        /* 其余布局样式 */
+        .search-container { position: relative; z-index: 20; max-width: 800px; margin: -45px auto 0; padding: 0 20px; }
+        .glass-search { background: white; padding: 8px; border-radius: 60px; display: flex; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border: 2px solid white; }
+        .glass-search input { flex: 1; border: none; outline: none; padding: 10px 25px; font-size: 1.1rem; }
+        .search-btn { background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; }
+        .data-section { max-width: 1300px; margin: 60px auto; padding: 0 40px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
 
-        /* --- 7. 详情抽屉 --- */
+        .graph-entry-card {
+            background: linear-gradient(135deg, #1a5d1a 0%, #3a7d44 100%); color: white; padding: 40px; border-radius: 30px; margin-bottom: 50px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; grid-column: 1 / -1; box-shadow: 0 15px 35px rgba(45, 90, 39, 0.25);
+        }
+        .graph-entry-card .graph-bg-icon { position: absolute; right: -30px; top: -30px; font-size: 14rem; opacity: 0.1; transform: rotate(-15deg); }
+        .graph-btn { background: white; color: var(--primary); padding: 12px 30px; border-radius: 50px; font-weight: 800; display: inline-flex; align-items: center; gap: 10px; margin-top: 15px; }
+
         .drawer-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(8px); z-index: 2000; display: none; }
         .drawer { position: fixed; right: 0; top: 0; width: 550px; height: 100%; background: white; transform: translateX(100%); transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); z-index: 2001; padding: 50px; overflow-y: auto; }
         .drawer.active { transform: translateX(0); }
         .close-drawer { font-size: 1.5rem; cursor: pointer; color: var(--primary); margin-bottom: 30px; display: block; }
 
-        /* --- 8. 管理弹窗 --- */
+        /* 授权弹窗样式 */
         .admin-modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 3000; display: none; align-items: center; justify-content: center; }
-        .admin-modal { background: white; width: 400px; padding: 40px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); position: relative; }
-        .admin-modal h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-        .admin-modal input { width: 100%; padding: 15px; margin-bottom: 20px; border: 1.5px solid #eee; border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s; }
-        .admin-modal input:focus { border-color: var(--primary); }
-        .admin-modal button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .admin-modal button:hover { opacity: 0.9; transform: scale(1.02); }
+        .admin-modal { background: white; width: 400px; padding: 40px; border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body>
@@ -179,25 +152,12 @@
 <nav id="navbar">
     <div class="logo"><i class="fas fa-leaf"></i> <b>AGRI-SEARCH</b></div>
     <div class="nav-right">
-        <a href="analysis.html" class="admin-link">
-            <i class="fas fa-chart-bar"></i> 数据分析
-        </a>
-
-        <a href="dashboard.html" class="admin-link" style="color: #f1c40f; font-weight: 800;">
-            <i class="fas fa-chart-line"></i> 决策指挥舱
-        </a>
-
-        <a class="admin-link" onclick="toggleAdminModal(true)">
-            <i class="fas fa-user-plus"></i> 账号授权
-        </a>
-
-        <a href="javascript:void(0)" onclick="goToAI()" class="ai-pill">
-            <i class="fas fa-wand-magic-sparkles"></i> AI 智能诊断
-        </a>
-
-        <a href="Login.html" class="logout-link">
-            <i class="fas fa-sign-out-alt"></i> 退出登录
-        </a>
+        <a href="addData.html" class="admin-link"><i class="fas fa-plus-circle"></i> 添加数据</a>
+        <a href="analysis.html" class="admin-link"><i class="fas fa-chart-bar"></i> 数据分析</a>
+        <a href="dashboard.html" class="admin-link" style="color: #f1c40f; font-weight: 800;"><i class="fas fa-chart-line"></i> 决策指挥舱</a>
+        <a class="admin-link" onclick="toggleAdminModal(true)"><i class="fas fa-user-plus"></i> 账号授权</a>
+        <a href="javascript:void(0)" onclick="goToAI()" class="ai-pill"><i class="fas fa-wand-magic-sparkles"></i> AI 智能诊断</a>
+        <a href="Login.html" class="logout-link" style="color:white; text-decoration:none;"><i class="fas fa-sign-out-alt"></i> 退出</a>
     </div>
 </nav>
 
@@ -220,33 +180,27 @@
 <main class="data-section">
     <div class="graph-entry-card" onclick="goToGraph()">
         <div class="text-content">
-            <h2 style="font-size: 2.2rem; margin-bottom: 10px;">
-                <i class="fas fa-project-diagram"></i> 农业知识关系图谱
-            </h2>
+            <h2 style="font-size: 2.2rem; margin-bottom: 10px;"><i class="fas fa-project-diagram"></i> 农业知识关系图谱</h2>
             <p style="font-size: 1.1rem; opacity: 0.9;">探索作物、病害、药剂与环境之间的深度关联网络</p>
-            <div class="graph-btn">
-                立即进入图谱模式 <i class="fas fa-arrow-right"></i>
-            </div>
+            <div class="graph-btn">立即进入图谱模式 <i class="fas fa-arrow-right"></i></div>
         </div>
         <i class="fas fa-network-wired graph-bg-icon"></i>
     </div>
 
     <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
         <h2 style="color: var(--primary);">实时病害知识列表</h2>
-        <span id="countBadge" style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">正在加载...</span>
+        <span id="countBadge" style="background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">正在同步...</span>
     </div>
 
-    <div class="card-grid" id="cardGrid">
-        <p style="text-align:center; grid-column:1/-1;">正在同步农作物专家知识库...</p>
-    </div>
+    <div class="card-grid" id="cardGrid"></div>
 </main>
 
 <div class="admin-modal-mask" id="adminModal" onclick="if(event.target==this) toggleAdminModal(false)">
     <div class="admin-modal">
-        <h2><i class="fas fa-shield-alt"></i> 管理员授权</h2>
-        <input type="text" id="newUsername" placeholder="新管理员用户名">
-        <input type="password" id="newPassword" placeholder="初始验证密钥">
-        <button onclick="handleAddNewAccount()">授权并加密存储</button>
+        <h2 style="color:var(--primary); margin-bottom:20px;"><i class="fas fa-shield-alt"></i> 管理员授权</h2>
+        <input type="text" id="newUsername" placeholder="新管理员用户名" style="width:100%; padding:12px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd; outline:none;">
+        <input type="password" id="newPassword" placeholder="初始验证密钥" style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid #ddd; outline:none;">
+        <button onclick="handleAddNewAccount()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">授权并加密存储</button>
         <p style="text-align:center; margin-top:15px; color:#999; font-size:0.8rem; cursor:pointer" onclick="toggleAdminModal(false)">取消操作</p>
     </div>
 </div>
@@ -260,74 +214,40 @@
 <script>
     let agriData = [];
 
-    // 初始化
+    // --- 1. 初始化与数据加载 ---
     window.addEventListener('DOMContentLoaded', () => {
+        // 入场动画
         setTimeout(() => { document.getElementById('shutter').style.transform = 'translateX(-120%)'; }, 300);
         fetchData();
     });
 
-    // --- 核心修复：添加缺失的 handleAddNewAccount 函数 ---
-    async function handleAddNewAccount() {
-        console.log("正在尝试调用 handleAddNewAccount..."); // 调试用
-        const user = document.getElementById('newUsername').value;
-        const pass = document.getElementById('newPassword').value;
-
-        if(!user || !pass) {
-            alert("请填写完整信息");
-            return;
-        }
-
-        try {
-            const params = new URLSearchParams();
-            params.append('action', 'addAccount');
-            params.append('operator', 'admin');
-            params.append('username', user);
-            params.append('password', btoa(pass)); // 模拟哈希传输
-
-            // 发送到 LoginServlet
-            const res = await fetch('./login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-
-            const data = await res.json();
-            alert(data.message);
-            if(data.success) {
-                toggleAdminModal(false);
-            }
-        } catch (e) {
-            console.error("授权异常:", e);
-            alert("请求失败，请检查后端 Servlet 是否运行");
-        }
-    }
-
-    // --- 其他原有功能函数 ---
-    function toggleAdminModal(show) {
-        document.getElementById('adminModal').style.display = show ? 'flex' : 'none';
-    }
-
     async function fetchData() {
         try {
             const response = await fetch('./searchPests');
-            if (!response.ok) throw new Error('API 响应错误');
             agriData = await response.json();
             render(agriData);
         } catch (error) {
             console.error("Fetch Error:", error);
-            document.getElementById('cardGrid').innerHTML = `<div style="text-align:center; grid-column:1/-1; padding: 50px; color: #e74c3c;">数据同步失败</div>`;
+            document.getElementById('cardGrid').innerHTML = '<p style="grid-column:1/-1; text-align:center; color:red;">数据加载失败，请检查后端服务</p>';
         }
     }
 
+    // --- 2. 渲染核心逻辑 ---
     function render(items) {
         const grid = document.getElementById('cardGrid');
         document.getElementById('countBadge').innerText = `${items.length} 条数据已同步`;
+
         if (items.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; padding: 50px;">无匹配结果</p>';
+            grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; padding:50px;">未发现匹配的病害记录</p>';
             return;
         }
+
         grid.innerHTML = items.map(item => `
             <div class="liquid-card" onclick="showDetail(${item.id})">
+                <div class="delete-badge" title="删除记录" onclick="event.stopPropagation(); handleDelete(${item.id})">
+                    <i class="fas fa-times"></i>
+                </div>
+
                 <div class="c-img-wrap">
                     <div class="c-img" style="background-image:url('${item.imageUrl || 'https://via.placeholder.com/400x300'}')"></div>
                     <div class="c-tag">索引 #${item.id}</div>
@@ -338,6 +258,24 @@
                 </div>
             </div>
         `).join('');
+    }
+
+    // --- 3. 功能操作 (删除/搜索/详情) ---
+    async function handleDelete(id) {
+        if (!confirm("⚠️ 确定要从专家库中永久移除这条记录吗？")) return;
+        try {
+            // 请求整合后的 AddPestsServlet doGet 路径
+            const res = await fetch(`./addPests?deleteId=${id}`);
+            const data = await res.json();
+            if (data.success) {
+                alert("🗑️ 数据已成功移除");
+                fetchData();
+            } else {
+                alert("删除失败: " + data.message);
+            }
+        } catch (e) {
+            alert("请求异常，请检查后端 Servlet 是否运行");
+        }
     }
 
     function handleSearch() {
@@ -373,9 +311,52 @@
         setTimeout(() => document.getElementById('mask').style.display = 'none', 500);
     }
 
+    // --- 4. 账号授权弹窗逻辑 (修复 Error 的核心) ---
+    function toggleAdminModal(show) {
+        const modal = document.getElementById('adminModal');
+        if (modal) {
+            modal.style.display = show ? 'flex' : 'none';
+        }
+    }
+
+    async function handleAddNewAccount() {
+        const user = document.getElementById('newUsername').value;
+        const pass = document.getElementById('newPassword').value;
+
+        if(!user || !pass) {
+            alert("请填写完整信息");
+            return;
+        }
+
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'addAccount');
+            params.append('operator', 'admin');
+            params.append('username', user);
+            params.append('password', btoa(pass)); // 简单加密传输
+
+            const res = await fetch('./login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+
+            const data = await res.json();
+            alert(data.message);
+            if(data.success) {
+                toggleAdminModal(false);
+                document.getElementById('newUsername').value = '';
+                document.getElementById('newPassword').value = '';
+            }
+        } catch (e) {
+            console.error("授权异常:", e);
+            alert("请求失败，请检查 LoginServlet 是否正确配置");
+        }
+    }
+
+    // --- 5. 导航与页面逻辑 ---
     function goToAI() { window.location.href = 'ai_diagnose.html'; }
     function goToGraph() { window.location.href = 'graph_view.html'; }
-
     window.onscroll = () => {
         document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
     };

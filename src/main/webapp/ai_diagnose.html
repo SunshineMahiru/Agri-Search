@@ -17,62 +17,48 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'PingFang SC', sans-serif; 
-            background-color: var(--soft-bg); 
+        body {
+            font-family: 'PingFang SC', sans-serif;
+            background-color: var(--soft-bg);
             color: #2c3e50;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* --- 2. 升级版：液态流光快门 --- */
+        /* --- 2. 液态流光快门 --- */
         #shutter {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 110vw; /* 略宽于屏幕，配合圆角 */
-            height: 100vh;
-            /* 彩虹液态渐变 */
+            position: fixed; top: 0; left: 0; width: 110vw; height: 100vh;
             background: linear-gradient(-45deg, #2d5a27, #2ecc71, #ffb92d, #00d2ff, #2ecc71);
             background-size: 400% 400%;
             animation: fluidGradient 5s ease infinite;
-            
-            z-index: 9999; 
-            pointer-events: none;
+            z-index: 9999; pointer-events: none;
             transition: transform 0.9s cubic-bezier(0.7, 0, 0.2, 1);
-            
-            /* 边缘液态化处理 */
             border-bottom-right-radius: 50% 100%;
             border-top-right-radius: 50% 100%;
-            
-            /* 玻璃质感 */
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             opacity: 0.98;
             box-shadow: 20px 0 50px rgba(0,0,0,0.1);
         }
 
-        /* 流动背景动画 */
         @keyframes fluidGradient {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* --- 3. 晶圆玻璃导航 --- */
+        /* --- 3. 导航栏 --- */
         nav {
             height: 70px; background: var(--glass); backdrop-filter: blur(20px);
             display: flex; justify-content: space-between; align-items: center;
             padding: 0 50px; border-bottom: 1px solid var(--border);
             position: sticky; top: 0; z-index: 100;
         }
-        .back-link { 
-            cursor: pointer; display: flex; align-items: center; gap: 10px; 
+        .back-link {
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
             font-weight: bold; color: var(--p-green); transition: 0.3s;
         }
         .back-link:hover { transform: translateX(-5px); color: var(--s-green); }
         .ai-title { font-size: 1.2rem; font-weight: 800; color: var(--p-green); }
-        .ai-title small { font-weight: 400; color: #999; margin-left: 10px; }
 
         /* --- 4. 实验室布局 --- */
         .lab-layout {
@@ -81,223 +67,198 @@
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(15px);
             border-radius: 30px; border: 1px solid var(--border);
             padding: 40px; box-shadow: 0 15px 35px rgba(45, 90, 39, 0.05);
         }
-        .panel-header h2 { font-size: 1.6rem; color: var(--p-green); margin-bottom: 8px; }
-        .panel-header p { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 30px; }
-
         .styled-input {
             width: 100%; height: 250px; background: rgba(255,255,255,0.8);
             border: 2px solid transparent; border-radius: 20px; padding: 25px;
             font-size: 1.05rem; line-height: 1.6; resize: none; outline: none;
-            transition: 0.4s; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+            transition: 0.4s;
         }
-        .styled-input:focus {
-            border-color: var(--s-green); background: white;
-            box-shadow: 0 0 30px rgba(46, 204, 113, 0.15);
-        }
+        .styled-input:focus { border-color: var(--s-green); background: white; box-shadow: 0 0 30px rgba(46, 204, 113, 0.15); }
 
         .glow-btn {
             width: 100%; padding: 18px; border-radius: 15px; border: none;
             background: linear-gradient(135deg, var(--p-green), var(--s-green));
             color: white; font-weight: 800; font-size: 1.1rem; cursor: pointer;
             transition: 0.4s; display: flex; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3);
-            margin-top: 25px;
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.3); margin-top: 25px;
         }
-        .glow-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(46, 204, 113, 0.5); }
 
-        /* --- 5. 诊断报告 (纸质/高级感) --- */
+        /* --- 5. 诊断报告 --- */
         .report-paper {
             background: white; border-radius: 4px 4px 30px 30px; padding: 60px;
             min-height: 600px; box-shadow: 0 30px 60px rgba(0,0,0,0.08);
             position: relative; display: none; overflow: hidden;
-            animation: paperIn 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
-        @keyframes paperIn { from { opacity: 0; transform: translateY(40px); } }
-
         .report-paper::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
             background: linear-gradient(90deg, var(--p-green), var(--warm-gold), var(--s-green));
         }
 
         .result-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
-        .res-crop { background: var(--soft-bg); color: var(--p-green); padding: 5px 15px; border-radius: 30px; font-weight: bold; font-size: 14px; display: inline-block; margin-bottom: 10px; }
-        .res-name { font-size: 2.5rem; color: var(--p-green); font-weight: 900; }
-
-        .confidence-box { text-align: center; border: 3px solid var(--s-green); border-radius: 50%; width: 90px; height: 90px; display: flex; flex-direction: column; justify-content: center; }
-        .confidence-val { font-size: 1.8rem; font-weight: 900; color: var(--s-green); }
+        .res-crop { background: var(--soft-bg); color: var(--p-green); padding: 5px 15px; border-radius: 30px; font-weight: bold; font-size: 14px; }
+        .res-name { font-size: 2.5rem; color: var(--p-green); font-weight: 900; margin-top: 10px; }
+        .confidence-val { font-size: 1.8rem; font-weight: 900; color: var(--s-green); border: 3px solid var(--s-green); border-radius: 50%; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; }
 
         .info-section { margin-bottom: 30px; }
         .info-section h4 { font-size: 1.1rem; color: #34495e; margin-bottom: 12px; border-left: 5px solid var(--s-green); padding-left: 15px; }
 
         .scanning { display: none; text-align: center; padding: 100px 0; }
-        .scan-line {
-            width: 80px; height: 80px; border: 5px solid #eee;
-            border-top-color: var(--s-green); border-radius: 50%;
-            margin: 0 auto 30px; animation: spin 1s infinite linear;
-        }
+        .scan-line { width: 80px; height: 80px; border: 5px solid #eee; border-top-color: var(--s-green); border-radius: 50%; margin: 0 auto 30px; animation: spin 1s infinite linear; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .debug-console {
-            margin-top: 25px; background: #1e272e; color: #00d2ff;
-            padding: 20px; border-radius: 20px; font-family: monospace; font-size: 12px;
-            max-height: 200px; overflow-y: auto;
-        }
-
-        .hidden { display: none !important; }
+        .debug-console { margin-top: 25px; background: #1e272e; color: #00d2ff; padding: 20px; border-radius: 20px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <div id="shutter"></div>
+<div id="shutter"></div>
 
-    <nav>
-        <div class="back-link" onclick="navigateBack()">
-            <i class="fas fa-arrow-left"></i> 返回农益搜
-        </div>
-        <div class="ai-title">🔬 智能植保实验室 <small>Doubao Pro 驱动</small></div>
-        <div>
-            <label style="font-size: 12px;"><input type="checkbox" id="demoToggle" checked> 演示模式</label>
-        </div>
-    </nav>
+<nav>
+    <div class="back-link" onclick="navigateBack()">
+        <i class="fas fa-arrow-left"></i> 返回农益搜
+    </div>
+    <div class="ai-title">🔬 智能植保实验室 <small>Doubao Pro 驱动</small></div>
+    <div>
+        <label style="font-size: 12px;"><input type="checkbox" id="demoToggle"> 演示模式</label>
+    </div>
+</nav>
 
-    <main class="lab-layout">
-        <div class="input-section">
-            <div class="glass-panel">
-                <div class="panel-header">
-                    <h2>🛡️ 症状特征采集</h2>
-                    <p>描述得越详细，AI 诊断的准确度就越高</p>
-                </div>
-                <textarea id="symptomInput" class="styled-input" placeholder="例如：我种的水稻叶片上出现了褐色的菱形斑点，叶尖开始发黄枯萎..."></textarea>
-                <button id="analyzeBtn" class="glow-btn">🚀 启动 AI 实时诊断</button>
+<main class="lab-layout">
+    <div class="input-section">
+        <div class="glass-panel">
+            <div class="panel-header">
+                <h2 style="color:var(--p-green); margin-bottom:10px;">🛡️ 症状特征采集</h2>
+                <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">描述得越详细，AI 诊断的准确度就越高</p>
             </div>
-
-            <div class="debug-console" id="debugLog">
-                <div>[SYSTEM] 智能核心已就绪。</div>
-            </div>
+            <textarea id="symptomInput" class="styled-input" placeholder="例如：我种的水稻叶片上出现了褐色的菱形斑点，叶尖开始发黄枯萎..."></textarea>
+            <button id="analyzeBtn" class="glow-btn">🚀 启动 AI 实时诊断</button>
         </div>
 
-        <div class="report-section">
-            <div id="emptyTip" style="text-align: center; margin-top: 150px; opacity: 0.2;">
-                <i class="fas fa-microscope" style="font-size: 5rem;"></i>
-                <h3 style="margin-top: 20px;">等待诊断指令</h3>
-            </div>
+        <div class="debug-console" id="debugLog">
+            <div>[SYSTEM] 智能核心已就绪。</div>
+        </div>
+    </div>
 
-            <div id="scanningState" class="scanning">
-                <div class="scan-line"></div>
-                <h3>正在解析液态病理数据...</h3>
-            </div>
+    <div class="report-section">
+        <div id="emptyTip" style="text-align: center; margin-top: 150px; opacity: 0.2;">
+            <i class="fas fa-microscope" style="font-size: 5rem;"></i>
+            <h3 style="margin-top: 20px;">等待诊断指令</h3>
+        </div>
 
-            <div id="reportPaper" class="report-paper">
-                <div class="result-head">
-                    <div>
-                        <span class="res-crop" id="resCrop">作物名称</span>
-                        <h1 class="res-name" id="resName">病害详情</h1>
-                    </div>
-                    <div class="confidence-box">
-                        <span class="confidence-val" id="resConf">0%</span>
-                    </div>
+        <div id="scanningState" class="scanning">
+            <div class="scan-line"></div>
+            <h3>正在解析液态病理数据...</h3>
+        </div>
+
+        <div id="reportPaper" class="report-paper">
+            <div class="result-head">
+                <div>
+                    <span class="res-crop" id="resCrop">作物名称</span>
+                    <h1 class="res-name" id="resName">病害详情</h1>
                 </div>
-                <div class="info-section">
-                    <h4>📋 病理详细分析</h4>
-                    <p id="resAnalysis"></p>
-                </div>
-                <div class="info-section">
-                    <h4>🛡️ 专家防治建议</h4>
-                    <p id="resPrevention"></p>
-                </div>
+                <div class="confidence-val" id="resConf">0%</div>
+            </div>
+            <div class="info-section">
+                <h4>📋 病理详细分析</h4>
+                <p id="resAnalysis" style="line-height: 1.7; color: #444;"></p>
+            </div>
+            <div class="info-section">
+                <h4>🛡️ 专家防治建议</h4>
+                <p id="resPrevention" style="line-height: 1.7; color: #2d5a27; font-weight: 500;"></p>
             </div>
         </div>
-    </main>
+    </div>
+</main>
 
-    <script>
-        // --- 1. 丝滑入场逻辑 ---
-        window.addEventListener('DOMContentLoaded', () => {
-            const shutter = document.getElementById('shutter');
-            // 页面加载后，遮罩向左滑走，露出内容
+<script>
+    // --- 1. 场控逻辑 ---
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => { document.getElementById('shutter').style.transform = 'translateX(-120%)'; }, 300);
+    });
+
+    function navigateBack() {
+        document.getElementById('shutter').style.transform = 'translateX(0)';
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+    }
+
+    // --- 2. AI 诊断逻辑 (核心修改点) ---
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const symptomInput = document.getElementById('symptomInput');
+    const debugLog = document.getElementById('debugLog');
+
+    analyzeBtn.addEventListener('click', async () => {
+        const val = symptomInput.value.trim();
+        if(!val) return alert("请输入症状描述");
+
+        // UI 切换
+        document.getElementById('emptyTip').style.display = 'none';
+        document.getElementById('reportPaper').style.display = 'none';
+        document.getElementById('scanningState').style.display = 'block';
+        addLog("正在启动云端诊断引擎...");
+
+        // 演示模式
+        if(document.getElementById('demoToggle').checked) {
             setTimeout(() => {
-                shutter.style.transform = 'translateX(-120%)';
-            }, 300);
-        });
-
-        // --- 2. 丝滑退场逻辑 ---
-        function navigateBack() {
-            const shutter = document.getElementById('shutter');
-            // 遮罩重新从左侧滑回，覆盖全屏
-            shutter.style.transform = 'translateX(0)';
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 800);
-            
+                renderReport({
+                    name: "演示：稻瘟病", crop: "水稻", confidence: "99",
+                    analysis: "这只是一个演示数据，用于展示界面效果。",
+                    prevention: "实际使用请关闭演示模式并配置 API。"
+                });
+            }, 1500);
+            return;
         }
 
-        // --- 3. AI 核心业务逻辑 ---
-        const API_KEY = ""; // 填入你的 Key
-        const MODEL_ID = "doubao-seed-1-6-251015";
-        const BASE_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+        // 【真实模式】请求你本地的 Java Servlet 代理
+        try {
+            addLog("正在通过本地网关连接豆包 AI...");
+            const response = await fetch('./aiProxy', {
+                method: "POST",
+                headers: { "Content-Type": "text/plain; charset=UTF-8" },
+                body: val
+            });
 
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        const symptomInput = document.getElementById('symptomInput');
-        const debugLog = document.getElementById('debugLog');
+            if (!response.ok) throw new Error("后端代理响应失败 (HTTP " + response.status + ")");
 
-        analyzeBtn.addEventListener('click', async () => {
-            const val = symptomInput.value.trim();
-            if(!val) return alert("请输入描述");
+            const data = await response.json();
 
-            document.getElementById('emptyTip').style.display = 'none';
-            document.getElementById('reportPaper').style.display = 'none';
-            document.getElementById('scanningState').style.display = 'block';
-            addLog("正在通过加密链路连接豆包 AI...");
+            // 豆包 API 返回的内容通常在 data.choices[0].message.content 中
+            let content = data.choices[0].message.content;
 
-            if(document.getElementById('demoToggle').checked) {
-                setTimeout(() => {
-                    renderReport({
-                        name: "水稻稻瘟病", crop: "水稻", confidence: "98.7",
-                        analysis: "诊断结论基于描述中的『褐色菱形病斑』特征。这属于典型的真菌性病害，主要由稻瘟病原菌引起。",
-                        prevention: "建议喷洒三环唑，并加强肥水管理，避免过度施氮。"
-                    });
-                }, 2000);
-            } else {
-                try {
-                    const response = await fetch(BASE_URL, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
-                        body: JSON.stringify({
-                            model: MODEL_ID,
-                            messages: [{ role: "system", content: "你是一个农业专家。回复纯JSON：{ \"name\": \"\", \"crop\": \"\", \"confidence\": 95, \"analysis\": \"\", \"prevention\": \"\" }" }, { role: "user", content: val }]
-                        })
-                    });
-                    const data = await response.json();
-                    let content = data.choices[0].message.content.replace(/```json/g, "").replace(/```/g, "").trim();
-                    renderReport(JSON.parse(content));
-                } catch (e) {
-                    addLog("API 异常，请检查配置");
-                    document.getElementById('scanningState').style.display = 'none';
-                    document.getElementById('emptyTip').style.display = 'block';
-                }
-            }
-        });
+            // 清理掉 AI 可能返回的 Markdown 标签
+            content = content.replace(/```json/g, "").replace(/```/g, "").trim();
 
-        function renderReport(res) {
+            const resultObj = JSON.parse(content);
+            renderReport(resultObj);
+            addLog("诊断成功，报告已生成。");
+
+        } catch (e) {
+            console.error("AI Error:", e);
+            addLog("诊断中断: " + e.message);
             document.getElementById('scanningState').style.display = 'none';
-            document.getElementById('reportPaper').style.display = 'block';
-            document.getElementById('resName').innerText = res.name;
-            document.getElementById('resCrop').innerText = res.crop;
-            document.getElementById('resConf').innerText = res.confidence + "%";
-            document.getElementById('resAnalysis').innerText = res.analysis;
-            document.getElementById('resPrevention').innerText = res.prevention;
-            addLog("报告生成成功。");
+            document.getElementById('emptyTip').style.display = 'block';
+            alert("AI 诊断失败，请确保 AIServlet 已正确部署且 API Key 有效。");
         }
+    });
 
-        function addLog(msg) {
-            const d = new Date();
-            debugLog.innerHTML += `<div>[${d.toLocaleTimeString()}] ${msg}</div>`;
-            debugLog.scrollTop = debugLog.scrollHeight;
-        }
-    </script>
+    function renderReport(res) {
+        document.getElementById('scanningState').style.display = 'none';
+        document.getElementById('reportPaper').style.display = 'block';
+        document.getElementById('resName').innerText = res.name;
+        document.getElementById('resCrop').innerText = res.crop;
+        document.getElementById('resConf').innerText = res.confidence + "%";
+        document.getElementById('resAnalysis').innerText = res.analysis;
+        document.getElementById('resPrevention').innerText = res.prevention;
+    }
+
+    function addLog(msg) {
+        const d = new Date();
+        debugLog.innerHTML += `<div>[${d.toLocaleTimeString()}] ${msg}</div>`;
+        debugLog.scrollTop = debugLog.scrollHeight;
+    }
+</script>
 </body>
 </html>
